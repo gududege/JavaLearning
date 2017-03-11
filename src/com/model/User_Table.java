@@ -2,6 +2,10 @@ package com.model;
 
 import com.utils.Util;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * 用户信息表：
@@ -33,13 +38,29 @@ public class User_Table implements Table {
 
     private static String sql;
 
-    private static final String tablename = "user";
+    private static String tablename = "";
 
     private final String[] columns = {"UUID", "name", "phone", "user_create_date", "user_modify_date"};
 
+    static {
+        Properties properties = new Properties();
+
+        String filepath = "conf/"+User_Table.class.getSimpleName()+".properties";
+        try {
+            InputStream in = new FileInputStream(filepath);
+            properties.load(in);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("缺少"+filepath+"文件");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        tablename = properties.getProperty("table_name");
+    }
+
     @Override
     public boolean createTable() throws SQLException {
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("create table if not exists " + tablename + "(")
                 .append(" id int unsigned not NULL auto_increment,")
                 .append(" UUID varchar(10) not NULL primary key,")
@@ -63,7 +84,7 @@ public class User_Table implements Table {
 
     @Override
     public boolean dropTable() throws SQLException {
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = "DROP TABLE IF EXISTS " + tablename;
         PreparedStatement pstm = connection.prepareStatement(sql);
         pstm.execute();
@@ -83,7 +104,7 @@ public class User_Table implements Table {
                 .append(" (UUID,name,password,phone)")
                 .append(" values (?,?,?,?)")
                 .toString();
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         PreparedStatement pstm = connection.prepareStatement(sql);
         int i = 1;
         pstm.setString(i++, user.getUuid());
@@ -107,7 +128,7 @@ public class User_Table implements Table {
     @Override
     public void update(Object object) throws SQLException {
         User user = (User) object;
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("update " + tablename)
                 .append(" set name=?,password=?,phone=?")
                 .append(" where UUID= " + "'" + user.getUuid() + "'")
@@ -126,7 +147,7 @@ public class User_Table implements Table {
     @Override
     public Object[] queryField(String field, String condition, String relation, String value) throws SQLException {
         Object[] objects = new Object[10];
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = "SELECT " + field + " FROM " + tablename + " WHERE " + condition + relation + value;
         PreparedStatement pstm = connection.prepareStatement(sql);
         ResultSet rs = pstm.executeQuery();
@@ -147,7 +168,7 @@ public class User_Table implements Table {
     @Override
     public boolean queryValueIsExists(String field, String value) throws SQLException {
         boolean bool = false;
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = "SELECT " + field + " FROM " + tablename + " WHERE " + field + " = " + value;
         PreparedStatement pstm = connection.prepareStatement(sql);
         ResultSet rs = pstm.executeQuery();
@@ -173,7 +194,7 @@ public class User_Table implements Table {
     public User query(Map<String, String> map) throws SQLException {
         User user = new User();
         Calendar cal = Calendar.getInstance();
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("select * from " + tablename + " where ")
                 .append(map.get("condition") + map.get("relation") + map.get("value"))
                 .toString();
@@ -214,7 +235,7 @@ public class User_Table implements Table {
         ArrayList<User> users = new ArrayList<>();
         User user = null;
         Calendar cal = Calendar.getInstance();
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("select * from " + tablename + " where ")
                 .append(map.get("condition") + map.get("relation") + map.get("value"))
                 .toString();

@@ -1,41 +1,55 @@
 package com.model;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mchange.v2.c3p0.cfg.C3P0Config;
+
+import java.beans.PropertyVetoException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * @author Liu
  */
 public class DB {
-	
-	private static final String dbname = "auto_order_system";
-	
-	static final String sqlServer = "localhost";
-	
-	static final String root = "root";
-	
-	static final String rootpassword = "1397";
 
-	//jdbc连接使用ssl
-	static final String databaseUrl = "jdbc:mysql://" + sqlServer + ":3306/" + dbname
-			+ "?user=" + root + "&password=" + rootpassword + "&useSSL=true&createDatabaseIfNotExist=true";
-	
-	static Connection rootconn;
-	
-	static String sql;
-	
-	/**
-	 * 获取root用户的连接
-	 * @return rootconn
-	 */
-	public static Connection getConnection() throws SQLException {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		rootconn = DriverManager.getConnection(databaseUrl);
-		return rootconn;
-	}
+    /**
+     * 获取root用户的连接
+     *
+     * @return Connection
+     * @throws SQLException
+     */
+    public static Connection getRootConnection() throws SQLException {
+        return getConnection("root");
+    }
+
+    /**
+     * 获取customer连接
+     *
+     * @return Connection
+     * @throws SQLException
+     */
+    public static Connection getCustomerConnection() throws SQLException {
+        return getConnection("customer");
+    }
+
+    /**
+     * 获取连接
+     *
+     * @param str 获取连接的类型
+     * @return Connection
+     * @throws SQLException
+     */
+    private static Connection getConnection(String str) throws SQLException {
+        ComboPooledDataSource cpds = new ComboPooledDataSource(str);
+        Connection rootconn = cpds.getConnection();
+        return rootconn;
+    }
 }

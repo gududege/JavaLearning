@@ -93,7 +93,7 @@ public class Util {
     
     public static boolean istableexist(String TableName) throws SQLException {
         boolean bool = false;
-        rootconn = DB.getConnection();
+        rootconn = DB.getRootConnection();
         sql = "show tables";
         PreparedStatement pstm = rootconn.prepareStatement(sql);
         ResultSet resultSet = pstm.executeQuery();

@@ -2,6 +2,10 @@ package com.model;
 
 import com.utils.Util;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -11,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * 订单信息表：
@@ -37,14 +42,29 @@ public class OrderList_Table implements Table {
 
     private static String sql;
 
-    private static final String tablename = "orderlist";
+    private static String tablename = "";
 
     private final String[] columns = {"order_number", "user_name", "order_create_date", "order_modify_date", "auto_ids", "auto_numbers", "day_numbers",
             "begin_date", "price"};
 
+    static {
+        Properties properties = new Properties();
+        String filepath = "conf/"+OrderList_Table.class.getSimpleName()+".properties";
+        try {
+            InputStream in = new FileInputStream(filepath);
+            properties.load(in);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("缺少"+filepath+"文件");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        tablename = properties.getProperty("table_name");
+    }
+
     @Override
     public boolean createTable() throws SQLException {
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("create table if not exists " + tablename + "(")
                 .append(" order_number int unsigned primary key,")
                 .append(" user_name varchar(10) not NULL,")
@@ -70,7 +90,7 @@ public class OrderList_Table implements Table {
 
     @Override
     public boolean dropTable() throws SQLException {
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = "drop table if exists " + tablename;
         PreparedStatement pstm = connection.prepareStatement(sql);
         pstm.execute();
@@ -91,7 +111,7 @@ public class OrderList_Table implements Table {
                 .append("( order_number,user_name,auto_ids,auto_numbers,day_numbers,begin_date,price)")
                 .append(" values (?,?,?,?,?,?,?)")
                 .toString();
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         PreparedStatement pstm = connection.prepareStatement(sql);
         int i = 1;
         pstm.setInt(i++, orderList.getOrder_number());
@@ -120,7 +140,7 @@ public class OrderList_Table implements Table {
     @Override
     public void update(Object object) throws SQLException {
         OrderList orderList = (OrderList) object;
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("update table " + tablename)
                 .append(" set user_name=?,auto_ids=?, ")
                 .append(" auto_numbers=?,day_numbers=?,begin_date=?,price=?")
@@ -143,7 +163,7 @@ public class OrderList_Table implements Table {
     @Override
     public Object[] queryField(String field, String condition, String relation, String value) throws SQLException {
         Object[] objects = new Object[10];
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = "SELECT " + field + " FROM " + tablename + " WHERE " + condition + relation + value;
         PreparedStatement pstm = connection.prepareStatement(sql);
         ResultSet rs = pstm.executeQuery();
@@ -164,7 +184,7 @@ public class OrderList_Table implements Table {
     @Override
     public boolean queryValueIsExists(String field, String value) throws SQLException {
         boolean bool = false;
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = "SELECT " + field + " FROM " + tablename + " WHERE " + field + "=" + value;
         PreparedStatement pstm = connection.prepareStatement(sql);
         ResultSet rs = pstm.executeQuery();
@@ -190,7 +210,7 @@ public class OrderList_Table implements Table {
     public OrderList query(Map<String, String> map) throws SQLException {
         OrderList orderList = new OrderList();
         Calendar cal = Calendar.getInstance();
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("select * from " + tablename + " where ")
                 .append(map.get("condition") + map.get("relation") + map.get("value"))
                 .toString();
@@ -231,7 +251,7 @@ public class OrderList_Table implements Table {
         ArrayList<OrderList> orderLists = new ArrayList<>();
         OrderList orderList = null;
         Calendar cal = Calendar.getInstance();
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("select * from " + tablename + " where ")
                 .append(map.get("condition") + map.get("relation") + map.get("value"))
                 .toString();

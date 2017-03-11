@@ -2,6 +2,10 @@ package com.model;
 
 import com.utils.Util;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 
 /**
@@ -32,13 +37,28 @@ public class Auto_Table implements Table {
 
     private static String sql;
 
-    private static final String tablename = "autolist";
+    private static String tablename = "";
 
     private final String[] columns = {"id", "name", "type", "quality", "weight", "passengernumber", "dayprice"};
 
+    static {
+        Properties properties = new Properties();
+        String filepath = "conf/"+Auto_Table.class.getSimpleName()+".properties";
+        try {
+            InputStream in = new FileInputStream(filepath);
+            properties.load(in);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("缺少"+filepath+"文件");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        tablename = properties.getProperty("table_name");
+    }
+
     @Override
     public boolean createTable() throws SQLException {
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("create table if not exists " + tablename + "(")
                 .append(" id smallint unsigned not null primary key,")
                 .append(" name varchar(10) not NULL,")
@@ -61,7 +81,7 @@ public class Auto_Table implements Table {
 
     @Override
     public boolean dropTable() throws SQLException {
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = "drop table if exists " + tablename;
         PreparedStatement pstm = connection.prepareStatement(sql);
         pstm.execute();
@@ -82,7 +102,7 @@ public class Auto_Table implements Table {
                 .append(" (id,name,type,quality,weight,passengernumber,dayprice)")
                 .append(" values (?,?,?,?,?,?,?)")
                 .toString();
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         PreparedStatement pstm = connection.prepareStatement(sql);
         int i = 1;
         pstm.setInt(i++, auto.getId());
@@ -108,13 +128,13 @@ public class Auto_Table implements Table {
     /**
      * 根据Auto的id定位修改的对象（id字段不可更改）
      *
-     * @param object
+     * @param object Auto类对象
      * @throws SQLException
      */
     @Override
     public void update(Object object) throws SQLException {
         Auto auto = (Auto) object;
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("update " + tablename)
                 .append(" set name=?,type=?,quality=?,")
                 .append(" weight=?,passengernumber=?,dayprice=? ")
@@ -137,7 +157,7 @@ public class Auto_Table implements Table {
     @Override
     public Object[] queryField(String field, String condition, String relation, String value) throws SQLException {
         Object[] objects = new Object[10];
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = "SELECT " + field + " FROM " + tablename + " WHERE " + condition + relation + value;
         PreparedStatement pstm = connection.prepareStatement(sql);
         ResultSet rs = pstm.executeQuery();
@@ -158,7 +178,7 @@ public class Auto_Table implements Table {
     @Override
     public boolean queryValueIsExists(String field, String value) throws SQLException {
         boolean bool = false;
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = "SELECT " + field + " FROM " + tablename + " WHERE " + field + "=" + value;
         PreparedStatement pstm = connection.prepareStatement(sql);
         ResultSet rs = pstm.executeQuery();
@@ -182,7 +202,7 @@ public class Auto_Table implements Table {
 
     public Auto query(Map<String, String> map) throws SQLException {
         Auto auto = new Auto();
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("select * from " + tablename + " where ")
                 .append(map.get("condition") + map.get("relation") + map.get("value"))
                 .toString();
@@ -216,7 +236,7 @@ public class Auto_Table implements Table {
     public ArrayList<Auto> getObjects(Map<String, String> map) throws SQLException {
         ArrayList<Auto> autos = new ArrayList<>();
         Auto auto = null;
-        connection = DB.getConnection();
+        connection = DB.getRootConnection();
         sql = new StringBuffer().append("select * from " + tablename + " where ")
                 .append(map.get("condition") + map.get("relation") + map.get("value"))
                 .toString();
