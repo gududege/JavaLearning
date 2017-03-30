@@ -1,5 +1,6 @@
-<%@ page import="com.controller.Controller" %>
-<%@ page import="com.controller.Admin_Controller" %><%--
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="com.night.controller.Controller" %>
+<%@ page import="com.night.controller.Admin_Controller" %><%--
   Created by IntelliJ IDEA.
   User: Adam
   Date: 2017/3/5
@@ -30,13 +31,20 @@
     String name = request.getParameter("admin_name");
     String password = request.getParameter("admin_password");
     Admin_Controller ac = new Admin_Controller();
-    if(name !=null || password != null) {
+    if (name != null || password != null) {
         if (ac.login(name, password)) {
-            response.sendRedirect("user.jsp");
+%>
+
+<%--<c:redirect url="admin.jsp">--%>
+<%--<c:param name="admin_name" value="${pageScope.name}"/>--%>
+<%--<c:param name="admin_password" value="${requestScope.get('admin_password')}"/>--%>
+<%--</c:redirect>--%>
+<%
         } else {
             out.print("<script>alert('用户名或密码错误')</script>");
         }
     }
 %>
+
 </body>
 </html>

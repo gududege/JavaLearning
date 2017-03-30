@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.night.dao.UserMapper">
+
+    <sql id="table">
+        user
+    </sql>
+
+    <sql id="columns">
+      UUID,name,password,phone
+    </sql>
+
+    <insert id="addUser" parameterType="User">
+        INSERT
+        <include refid="table"/>
+        (<include refid="columns"/>)
+        VALUES (#{UUID},#{name},#{password},#{phone})
+    </insert>
+
+    <update id="createTable">
+        create table if not exists <include refid="table"/> (
+          id int unsigned not NULL auto_increment,
+          UUID varchar(10) not NULL primary key,
+          name varchar(20) not NULL unique,
+          password varchar(20) not null default 0,
+          phone bigint unsigned not NULL default 0 unique,
+          user_create_date timestamp not NULL default current_timestamp(),
+          user_modify_date timestamp not NULL default current_timestamp() on update current_timestamp(),
+          key(id))
+    </update>
+
+    <delete id="deleteUser" parameterType="User">
+        DELETE FROM <include refid="table"/>
+        WHERE UUID = #{UUID}
+    </delete>
+
+    <update id="saveUser" parameterType="User">
+        UPDATE
+        <include refid="table"/>
+        SET
+        name = #{name},
+        password = #{password},
+        phone = #{phone}
+        WHERE UUID = #{UUID}
+    </update>
+
+    <select id="selectOneById" resultType="User" parameterType="int">
+        select * from
+        <include refid="table"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectOneByUUID" resultType="User" parameterType="String">
+        select * from
+        <include refid="table"/>
+        where UUID = #{UUID}
+    </select>
+
+    <select id="selectOneByName" resultType="User" parameterType="String">
+        select * from
+        <include refid="table"/>
+        where name = #{name}
+    </select>
+
+    <select id="selectList" resultType="User">
+        SELECT * FROM
+        <include refid="table"/>
+    </select>
+
+</mapper>

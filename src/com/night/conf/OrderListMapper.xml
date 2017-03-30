@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.night.dao.OrderListMapper">
+
+    <sql id="table">
+        orderlist
+    </sql>
+
+    <sql id="columns">
+        order_number,user_UUID,order_create_date,order_modify_date,auto_ids,auto_numbers,day_numbers,begin_date,price
+    </sql>
+
+    <insert id="addOrderList" parameterType="OrderList">
+        INSERT
+        <include refid="table"/>
+        (<include refid="columns"/>)
+        VALUES (#{order_number},#{user_UUID},#{order_create_date},#{order_modify_date},#{auto_ids},#{auto_numbers},#{day_numbers},#{begin_date},#{price})
+    </insert>
+
+    <update id="createTable">
+        create table if not exists <include refid="table"/> (
+          order_number int unsigned primary key,
+          user_UUID varchar(20) not NULL,
+          order_create_date timestamp not null default current_timestamp(),
+          order_modify_date timestamp not null default 0 on update current_timestamp(),
+          auto_ids varchar(100) not NULL,
+          auto_numbers varchar(100) not NULL,
+          day_numbers varchar(100) not NULL,
+          begin_date date not NULL,
+          price smallint unsigned not NULL)
+    </update>
+
+    <update id="saveOrderList" parameterType="OrderList">
+        UPDATE
+        <include refid="table"/>
+        SET
+        user_UUID = #{user_UUID},
+        order_create_date = #{order_create_date},
+        order_modify_date = #{order_modify_date},
+        auto_ids = #{auto_ids},
+        auto_numbers = #{auto_numbers},
+        day_numbers = #{day_numbers},
+        begin_date = #{begin_date},
+        price = #{price}
+        WHERE order_number = #{order_number}
+    </update>
+
+    <select id="selectOneByOrderNumber" resultType="OrderList" parameterType="int">
+        select * from
+        <include refid="table"/>
+        where order_number = #{order_number}
+    </select>
+
+    <select id="selectList" resultType="OrderList">
+        SELECT * FROM
+        <include refid="table"/>
+    </select>
+
+</mapper>

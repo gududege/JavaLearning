@@ -1,4 +1,4 @@
-<%@ page import="com.controller.User_Controller" %><%--
+<%@ page import="com.night.controller.User_Controller" %><%--
   Created by IntelliJ IDEA.
   User: Adam
   Date: 2017/3/5
@@ -20,7 +20,7 @@
     String password_cookie = "";
     Cookie[] cookies = request.getCookies();
     for (Cookie c : cookies) {
-        if (c.getName().equals("user_name")) {
+        if (c.getName().equals("user_Name")) {
             name_cookie = c.getValue();
         }
         if (c.getName().equals("user_password")) {
@@ -34,7 +34,7 @@
         }
     } else {
         //接受form表单提交的登陆信息
-        String name = request.getParameter("user_name");
+        String name = request.getParameter("user_Name");
         String password = request.getParameter("user_password");
         String[] str = request.getParameterValues("auto_login");
 
@@ -42,19 +42,19 @@
         if (name != null && password != null) {
             if (uc.login(name, password)) {
                 //设置cookie，有效期10天
-                Cookie user_name = new Cookie("user_name", name);
+                Cookie user_Name = new Cookie("user_Name", name);
                 Cookie user_password = new Cookie("user_password", password);
                 if (str != null && str.length > 0) {
-                    user_name.setMaxAge(864000);
+                    user_Name.setMaxAge(864000);
                     user_password.setMaxAge(864000);
                 } else {
-                    user_name.setMaxAge(0);
+                    user_Name.setMaxAge(0);
                     user_password.setMaxAge(0);
                 }
-                response.addCookie(user_name);
+                response.addCookie(user_Name);
                 response.addCookie(user_password);
                 //跳转前将登录信息存到session里
-                session.setAttribute("user_name", name);
+                session.setAttribute("user_Name", name);
                 session.setAttribute("user_password", password);
                 response.sendRedirect("user.jsp");
             } else {
@@ -67,7 +67,7 @@
     <table>
         <tr/>
         <td>用户名:</td>
-        <td><input type="text" name="user_name" value="<%=session.getAttribute("user_name")%>"></td>
+        <td><input type="text" name="user_Name" value="<%=session.getAttribute("user_Name")%>"></td>
         <tr/>
         <td>密码:</td>
         <td><input type="password" name="user_password" value=""></td>
@@ -78,8 +78,8 @@
         <td><input type="reset" value="取消"></td>
     </table>
 </form>
-<%
-
-%>
+<form method="post" action="regist.jsp">
+    <input type="submit" value="注册新用户">
+</form>
 </body>
 </html>

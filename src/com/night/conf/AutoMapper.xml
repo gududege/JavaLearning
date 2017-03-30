@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.night.dao.AutoMapper">
+
+    <sql id="table">
+        auto
+    </sql>
+
+    <sql id="columns">
+        id,name,type,quality,weight_capacity,passenger_number,day_price
+    </sql>
+
+    <insert id="addAuto" parameterType="Auto">
+        INSERT
+        <include refid="table"/>
+        (<include refid="columns"/>)
+        VALUES (#{id},#{name},#{type},#{quality},#{weightCapacity},#{passengerNumber},#{dayPrice})
+    </insert>
+
+    <update id="createTable">
+       create table if not exists <include refid="table"/>(
+        id smallint unsigned not null auto_increment primary key,
+        name varchar(30) not NULL UNIQUE,
+        type varchar(10) not NULL,
+        quality smallint unsigned not NULL,
+        weight_capacity smallint unsigned not NULL,
+        passenger_number tinyint unsigned  not NULL,
+        day_price smallint unsigned not NULL)
+    </update>
+
+    <delete id="deleteAuto" parameterType="Auto">
+        DELETE FROM <include refid="table"/>
+        WHERE id = #{id}
+    </delete>
+
+    <update id="saveAuto" parameterType="Auto">
+        UPDATE
+        <include refid="table"/>
+        SET
+        name = #{name},
+        type = #{type},
+        quality = #{quality},
+        weight_capacity = #{weightCapacity},
+        passenger_number = #{passengerNumber},
+        day_price = #{dayPrice}
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectOneById" resultType="Auto" parameterType="int">
+        select <include refid="columns"/> from
+        <include refid="table"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectOneByName" resultType="Auto" parameterType="String">
+        select <include refid="columns"/> from
+        <include refid="table"/>
+        where name = #{name}
+    </select>
+
+    <select id="selectList" resultType="Auto">
+        SELECT <include refid="columns"/> FROM
+        <include refid="table"/>
+    </select>
+
+</mapper>

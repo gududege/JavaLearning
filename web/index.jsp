@@ -1,5 +1,11 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="java.util.Calendar" %>
-<%@ page import="java.util.Date" %><%--
+<%@ page import="java.util.Date" %>
+<%@page import="com.mysql.jdbc.*,java.sql.*" %>
+
+<%--
   Created by IntelliJ IDEA.
   User: Adam
   Date: 2017/3/5
@@ -25,8 +31,10 @@
     }
     application.setAttribute("time", cal);
     application.setAttribute("helloword", str);
+//    自动5s刷新
+    response.setIntHeader("refresh",5);
 %>
-<h1>欢迎访问系统</h1>
+<h1><c:out value="${applicationScope.get('helloword')}"/>,欢迎访问系统</h1>
 <table>
     <tr/>
     <td><a href="adminlogin.jsp">我是管理员</a></td>

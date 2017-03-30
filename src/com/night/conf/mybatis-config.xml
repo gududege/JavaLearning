@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties>
+        <property name="driver" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/auto_order_system"/>
+        <property name="root_username" value="root"/>
+        <property name="root_password" value="1397"/>
+        <property name="user_username" value="root"/>
+        <property name="user_password" value="1397"/>
+    </properties>
+    <!--类型别名，设置使用 Bean 的首字母小写的非限定类名来作为它的别名-->
+    <typeAliases>
+        <package name="com.night.model"/>
+    </typeAliases>
+    <environments default="developer">
+        <environment id="developer">
+            <transactionManager type="JDBC"/>
+            <dataSource type="UNPOOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${root_username}"/>
+                <property name="password" value="${root_password}"/>
+            </dataSource>
+        </environment>
+        <environment id="customer">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${user_username}"/>
+                <property name="password" value="${user_password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <!--<mapper class="com.night.dao.UserMapper"/>-->
+        <mapper resource="com/night/conf/UserMapper.xml"/>
+        <mapper resource="com/night/conf/AutoMapper.xml"/>
+        <mapper resource="com/night/conf/OrderAutoMapper.xml"/>
+    </mappers>
+</configuration>
