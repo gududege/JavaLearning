@@ -9,11 +9,11 @@
     </sql>
 
     <sql id="db_columns">
-      order_number,user_UUID,order_create_date,order_modify_date,auto_ids,auto_numbers,day_numbers,begin_date,price
+      order_number,user_UUID,order_create_date,order_modify_date,auto_id,auto_number,day_number,begin_date,price
     </sql>
 
     <sql id="select_all_columns">
-      order_number orderNumber,user_UUID userUUID,order_create_date createDate,order_modify_date modifyDate,auto_ids autoIds,auto_numbers autoNumbers,day_numbers dayNumbers,begin_date beginDate,price
+      order_number orderNumber,user_UUID userUUID,order_create_date createDate,order_modify_date modifyDate,auto_id autoId,auto_number autoNumber,day_number dayNumber,begin_date beginDate,price
     </sql>
 
     <insert id="addOrderList" parameterType="OrderList">
@@ -21,20 +21,20 @@
         <include refid="table"/>
         (<include refid="db_columns"/>)
         VALUES
-        (#{order_number},#{user_UUID},#{order_create_date},#{order_modify_date},#{auto_ids},#{auto_numbers},#{day_numbers},#{begin_date},#{price})
+        (#{order_number},#{user_UUID},#{order_create_date},#{order_modify_date},#{auto_id},#{auto_number},#{day_number},#{begin_date},#{price})
     </insert>
 
     <update id="createTable">
         create table if not exists
         <include refid="table"/>
         (
-        order_number int unsigned primary key,
+        order_number VARCHAR(15) primary key,
         user_UUID varchar(20) not NULL,
         order_create_date timestamp not null default current_timestamp(),
         order_modify_date timestamp not null default 0 on update current_timestamp(),
-        auto_ids varchar(100) not NULL,
-        auto_numbers varchar(100) not NULL,
-        day_numbers varchar(100) not NULL,
+        auto_id SMALLINT unsigned not NULL,
+        auto_number SMALLINT unsigned not NULL,
+        day_number SMALLINT unsigned not NULL,
         begin_date date not NULL,
         price smallint unsigned not NULL)
     </update>
@@ -46,9 +46,9 @@
         user_UUID = #{user_UUID},
         order_create_date = #{order_create_date},
         order_modify_date = #{order_modify_date},
-        auto_ids = #{auto_ids},
-        auto_numbers = #{auto_numbers},
-        day_numbers = #{day_numbers},
+        auto_id = #{auto_id},
+        auto_number = #{auto_number},
+        day_number = #{day_number},
         begin_date = #{begin_date},
         price = #{price}
         WHERE order_number = #{order_number}

@@ -1,25 +1,28 @@
 package com.night.utils;
 
+import javax.xml.crypto.Data;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Formatter;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 /**
  * 工具类
  * @author Liu
+ * @// TODO: 2017/3/31  generateOrderNumber()方法需添加同步锁
  */
 public class Util {
-	
-	private static int Auto_id = 1;
-
-    private static Connection rootconn;
-
-    private static String sql;
 
     private static String[] chars = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
             "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7",
@@ -40,58 +43,62 @@ public class Util {
         return shortBuffer.toString();
     }
 
-    private static int serial_number = 100;
-
     /**
-     *订单格式：年+月+日+该日订单号,11位，例：2017021511
+     *订单格式：年+月+日+该日订单号,12位，例：201702151234
      */
-    public static int generateOrderNumber() throws Exception {
-        if (serial_number > 199) {
+    public static String generateOrderNumber() throws Exception {
+
+        /**
+         * 从com.night.conf.Constant.properties下读取每日订车次数
+         */
+        Properties properties = new Properties();
+        try {
+            properties.load(Util.class.getResourceAsStream("/com/night/conf/Constant.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        String times = properties.getProperty("day_order_times");
+        if (Integer.parseInt(times) > 19999) {
             throw new Exception("本日订单已满，请明日惠顾，谢谢");
         }
-        Calendar cal = Calendar.getInstance();
         StringBuffer str = new StringBuffer();
         Formatter fm = new Formatter();
-        if (cal.get(Calendar.HOUR_OF_DAY) == 0 && cal.get(Calendar.MINUTE) == 0) {
-            serial_number = 100;
-        }
-        str.append(fm.format("%1$tY%1$tm%1$td", cal)).append(String.valueOf(serial_number).substring(1, 3));
-        serial_number++;
-        return Integer.valueOf(str.toString());
-    }
-
-    /**
-     *返回字符串形式：“1|1|1|1|1|1”
-     */
-    public static String getString(ArrayList<Integer> list) {
-        StringBuffer str = new StringBuffer();
-        if (list.size() == 0) {
-            str.append("订单为空");
-        } else {
-            for (int i = 0; i < list.size(); i++) {
-                str.append(list.get(i)).append("|");
-            }
-            str.deleteCharAt(str.length());
-        }
+        str.append(fm.format("%1$tY%1$tm%1$td", Calendar.getInstance())).append(String.valueOf(times).substring(1, 3));
+        times = String.valueOf(Integer.parseInt(times)+1);
+        properties.setProperty("day_order_times",times);
+        properties.store(new FileOutputStream(Util.class.getResource("/com/night/conf/Constant.properties").getFile()),"");
         return str.toString();
     }
-    
-    /**
-     * 将{@link Util#getString(ArrayList)}生成的“1|1|1|1”形式字符串转换为{@link ArrayList}
-     * @return ArrayList<Integer>
+
+    /*
+     *设置每日零时更新Constant.properties文件
      */
-    public static ArrayList<Integer> getList(String str){
-        ArrayList<Integer> array = new ArrayList<>();
-        String[] a = str.split("\\|");
-        for (String s:a) {
-            array.add(Integer.valueOf(s));
-        }
-        return array;
-    }
-    
-    public static int generateAutoId(){
-    	Auto_id++;
-    	return Auto_id;
+    private static void updateConf(){
+        Calendar cal = Calendar.getInstance();
+        Timer timer = new Timer();
+        cal.set(Calendar.HOUR_OF_DAY,0);
+        cal.set(Calendar.MINUTE,0);
+        cal.set(Calendar.SECOND,0);
+        Date date = new Date(cal.getTimeInMillis());
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Properties properties = new Properties();
+                try {
+                    properties.load(Util.class.getResourceAsStream("/com/night/conf/Constant.properties"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                //更新每日订单数
+                properties.setProperty("day_order_times","10000");
+                try {
+                    properties.store(new FileOutputStream(Util.class.getResource("/com/night/conf/Constant.properties").getFile()),"update day_order_times");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        },date,1000*60*60*24);
     }
 
     public static boolean isAllDigit(String str){

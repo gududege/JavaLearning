@@ -28,7 +28,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class OrderList {
 
-    private int orderNumber; //订单号
+    private String orderNumber; //订单号
 
     private String userUUID; //订单用户
 
@@ -48,9 +48,9 @@ public class OrderList {
     
     private int price; //总价
     
-    public OrderList(int orderNumber, String userUUID, Date orderModifyDate,
-                     int autoId, int autoNumber, int dayNumber, Date beginDate, int price) {
-        this.orderNumber = orderNumber;
+    public OrderList(String userUUID, Date orderModifyDate,
+                     int autoId, int autoNumber, int dayNumber, Date beginDate, int price) throws Exception {
+        this.orderNumber = Util.generateOrderNumber();
         this.userUUID = userUUID;
         this.orderModifyDate = orderModifyDate;
         this.autoId = autoId;
