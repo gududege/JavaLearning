@@ -13,7 +13,7 @@
     <form action="registservlet" method="post">
         <table>
             <tr/>
-            <td>用户名：<input type="text" name="user_Name"/></td>
+            <td>用户名：<input type="text" name="userUUID"/></td>
             <tr/>
             <td>密码&nbsp;&nbsp;：<input type="password" name="user_password"/></td>
             <tr/>

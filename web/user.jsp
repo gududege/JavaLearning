@@ -18,11 +18,11 @@
 
     String is_quit = request.getParameter("user_quit");
     if (is_quit != null && is_quit.length() > 0){
-        Cookie user_Name = new Cookie("user_Name", "");
+        Cookie userUUID = new Cookie("userUUID", "");
         Cookie user_password = new Cookie("user_password", "");
-        user_Name.setMaxAge(0);
+        userUUID.setMaxAge(0);
         user_password.setMaxAge(0);
-        response.addCookie(user_Name);
+        response.addCookie(userUUID);
         response.addCookie(user_password);
         response.sendRedirect("index.jsp");
     }

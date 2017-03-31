@@ -8,28 +8,35 @@
         orderlist
     </sql>
 
-    <sql id="columns">
-        order_number,user_UUID,order_create_date,order_modify_date,auto_ids,auto_numbers,day_numbers,begin_date,price
+    <sql id="db_columns">
+      order_number,user_UUID,order_create_date,order_modify_date,auto_ids,auto_numbers,day_numbers,begin_date,price
+    </sql>
+
+    <sql id="select_all_columns">
+      order_number orderNumber,user_UUID userUUID,order_create_date createDate,order_modify_date modifyDate,auto_ids autoIds,auto_numbers autoNumbers,day_numbers dayNumbers,begin_date beginDate,price
     </sql>
 
     <insert id="addOrderList" parameterType="OrderList">
         INSERT
         <include refid="table"/>
-        (<include refid="columns"/>)
-        VALUES (#{order_number},#{user_UUID},#{order_create_date},#{order_modify_date},#{auto_ids},#{auto_numbers},#{day_numbers},#{begin_date},#{price})
+        (<include refid="db_columns"/>)
+        VALUES
+        (#{order_number},#{user_UUID},#{order_create_date},#{order_modify_date},#{auto_ids},#{auto_numbers},#{day_numbers},#{begin_date},#{price})
     </insert>
 
     <update id="createTable">
-        create table if not exists <include refid="table"/> (
-          order_number int unsigned primary key,
-          user_UUID varchar(20) not NULL,
-          order_create_date timestamp not null default current_timestamp(),
-          order_modify_date timestamp not null default 0 on update current_timestamp(),
-          auto_ids varchar(100) not NULL,
-          auto_numbers varchar(100) not NULL,
-          day_numbers varchar(100) not NULL,
-          begin_date date not NULL,
-          price smallint unsigned not NULL)
+        create table if not exists
+        <include refid="table"/>
+        (
+        order_number int unsigned primary key,
+        user_UUID varchar(20) not NULL,
+        order_create_date timestamp not null default current_timestamp(),
+        order_modify_date timestamp not null default 0 on update current_timestamp(),
+        auto_ids varchar(100) not NULL,
+        auto_numbers varchar(100) not NULL,
+        day_numbers varchar(100) not NULL,
+        begin_date date not NULL,
+        price smallint unsigned not NULL)
     </update>
 
     <update id="saveOrderList" parameterType="OrderList">
@@ -47,14 +54,18 @@
         WHERE order_number = #{order_number}
     </update>
 
-    <select id="selectOneByOrderNumber" resultType="OrderList" parameterType="int">
-        select * from
+    <select id="getOneByOrderNumber" resultType="OrderList" parameterType="int">
+        select
+        <include refid="select_all_columns"/>
+        from
         <include refid="table"/>
         where order_number = #{order_number}
     </select>
 
-    <select id="selectList" resultType="OrderList">
-        SELECT * FROM
+    <select id="getList" resultType="OrderList">
+        SELECT
+        <include refid="select_all_columns"/>
+        FROM
         <include refid="table"/>
     </select>
 

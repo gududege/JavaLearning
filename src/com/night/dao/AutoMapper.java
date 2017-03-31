@@ -4,13 +4,13 @@ import com.night.model.Auto;
 
 import java.util.List;
 
-public interface AutoMapper extends Mapper{
+public interface AutoMapper{
     
-    Auto selectOneById(int id);
+    Auto getOneById(int id);
 
-    Auto selectOneByName(String name);
+    Auto getOneByName(String name);
 
-    List<Auto> selectList();
+    List<Auto> getList();
 
     void saveAuto(Auto Auto);
 

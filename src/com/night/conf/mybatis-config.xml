@@ -15,7 +15,7 @@
     <typeAliases>
         <package name="com.night.model"/>
     </typeAliases>
-    <environments default="developer">
+    <environments default="customer">
         <environment id="developer">
             <transactionManager type="JDBC"/>
             <dataSource type="UNPOOLED">
@@ -39,6 +39,7 @@
         <!--<mapper class="com.night.dao.UserMapper"/>-->
         <mapper resource="com/night/conf/UserMapper.xml"/>
         <mapper resource="com/night/conf/AutoMapper.xml"/>
-        <mapper resource="com/night/conf/OrderAutoMapper.xml"/>
+        <mapper resource="com/night/conf/OrderListMapper.xml"/>
+        <mapper resource="com/night/conf/UtilMapper.xml"/>
     </mappers>
 </configuration>

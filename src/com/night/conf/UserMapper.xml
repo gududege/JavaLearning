@@ -8,8 +8,12 @@
         user
     </sql>
 
-    <sql id="columns">
-      UUID,name,password,phone
+    <sql id="db_columns">
+      UUID,name,password,phone,user_create_date,user_modify_date
+    </sql>
+
+    <sql id="select_all_columns">
+      UUID,name,password,phone,user_create_date createDate,user_modify_date modifyDate
     </sql>
 
     <insert id="addUser" parameterType="User">
@@ -20,19 +24,22 @@
     </insert>
 
     <update id="createTable">
-        create table if not exists <include refid="table"/> (
-          id int unsigned not NULL auto_increment,
-          UUID varchar(10) not NULL primary key,
-          name varchar(20) not NULL unique,
-          password varchar(20) not null default 0,
-          phone bigint unsigned not NULL default 0 unique,
-          user_create_date timestamp not NULL default current_timestamp(),
-          user_modify_date timestamp not NULL default current_timestamp() on update current_timestamp(),
-          key(id))
+        create table if not exists
+        <include refid="table"/>
+        (
+        id int unsigned not NULL auto_increment,
+        UUID varchar(10) not NULL primary key,
+        name varchar(20) not NULL unique,
+        password varchar(20) not null default 0,
+        phone bigint unsigned not NULL default 0 unique,
+        user_create_date timestamp not NULL default current_timestamp(),
+        user_modify_date timestamp not NULL default current_timestamp() on update current_timestamp(),
+        key(id))
     </update>
 
     <delete id="deleteUser" parameterType="User">
-        DELETE FROM <include refid="table"/>
+        DELETE FROM
+        <include refid="table"/>
         WHERE UUID = #{UUID}
     </delete>
 
@@ -46,26 +53,32 @@
         WHERE UUID = #{UUID}
     </update>
 
-    <select id="selectOneById" resultType="User" parameterType="int">
+    <select id="getOneById" resultType="User" parameterType="int">
         select * from
         <include refid="table"/>
         where id = #{id}
     </select>
 
-    <select id="selectOneByUUID" resultType="User" parameterType="String">
-        select * from
+    <select id="getOneByUUID" resultType="User" parameterType="String">
+        select
+        <include refid="select_all_columns"/>
+        from
         <include refid="table"/>
         where UUID = #{UUID}
     </select>
 
-    <select id="selectOneByName" resultType="User" parameterType="String">
-        select * from
+    <select id="getOneByName" resultType="User" parameterType="String">
+        select
+        <include refid="select_all_columns"/>
+        from
         <include refid="table"/>
         where name = #{name}
     </select>
 
-    <select id="selectList" resultType="User">
-        SELECT * FROM
+    <select id="getList" resultType="User">
+        SELECT
+        <include refid="select_all_columns"/>
+        FROM
         <include refid="table"/>
     </select>
 

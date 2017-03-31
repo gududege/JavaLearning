@@ -1,19 +1,18 @@
 package com.night.dao;
 
 import com.night.model.User;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
 public interface UserMapper{
 
-    User selectOneById(int id);
+    User getOneById(int id);
 
-    User selectOneByName(String name);
+    User getOneByName(String name);
 
-    User selectOneByUUID(String UUID);
+    User getOneByUUID(String UUID);
 
-    List<User> selectList();
+    List<User> getList();
 
     void saveUser(User user);
 

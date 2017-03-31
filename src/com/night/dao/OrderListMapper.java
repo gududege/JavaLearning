@@ -1,16 +1,15 @@
 package com.night.dao;
 
 
-import com.night.model.Auto;
 import com.night.model.OrderList;
 
 import java.util.List;
 
-public interface OrderListMapper extends Mapper{
+public interface OrderListMapper{
 
-    OrderList selectOneByOrderNumber(int order_number);
+    OrderList getOneByOrderNumber(int order_number);
 
-    List<OrderList> selectList();
+    List<OrderList> getList();
 
     void saveOrderList(OrderList OrderList);
 

@@ -20,7 +20,7 @@
     String password_cookie = "";
     Cookie[] cookies = request.getCookies();
     for (Cookie c : cookies) {
-        if (c.getName().equals("user_Name")) {
+        if (c.getName().equals("userUUID")) {
             name_cookie = c.getValue();
         }
         if (c.getName().equals("user_password")) {
@@ -34,7 +34,7 @@
         }
     } else {
         //接受form表单提交的登陆信息
-        String name = request.getParameter("user_Name");
+        String name = request.getParameter("userUUID");
         String password = request.getParameter("user_password");
         String[] str = request.getParameterValues("auto_login");
 
@@ -42,19 +42,19 @@
         if (name != null && password != null) {
             if (uc.login(name, password)) {
                 //设置cookie，有效期10天
-                Cookie user_Name = new Cookie("user_Name", name);
+                Cookie userUUID = new Cookie("userUUID", name);
                 Cookie user_password = new Cookie("user_password", password);
                 if (str != null && str.length > 0) {
-                    user_Name.setMaxAge(864000);
+                    userUUID.setMaxAge(864000);
                     user_password.setMaxAge(864000);
                 } else {
-                    user_Name.setMaxAge(0);
+                    userUUID.setMaxAge(0);
                     user_password.setMaxAge(0);
                 }
-                response.addCookie(user_Name);
+                response.addCookie(userUUID);
                 response.addCookie(user_password);
                 //跳转前将登录信息存到session里
-                session.setAttribute("user_Name", name);
+                session.setAttribute("userUUID", name);
                 session.setAttribute("user_password", password);
                 response.sendRedirect("user.jsp");
             } else {
@@ -67,7 +67,7 @@
     <table>
         <tr/>
         <td>用户名:</td>
-        <td><input type="text" name="user_Name" value="<%=session.getAttribute("user_Name")%>"></td>
+        <td><input type="text" name="userUUID" value="<%=session.getAttribute("userUUID")%>"></td>
         <tr/>
         <td>密码:</td>
         <td><input type="password" name="user_password" value=""></td>

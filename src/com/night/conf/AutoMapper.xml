@@ -8,30 +8,35 @@
         auto
     </sql>
 
-    <sql id="columns">
+    <sql id="database_columns">
         id,name,type,quality,weight_capacity,passenger_number,day_price
+    </sql>
+
+    <sql id="select_all_columns">
+        id,name,type,quality,weight_capacity weightCapcity,passenger_number passengerNumber,day_price dayPrice
     </sql>
 
     <insert id="addAuto" parameterType="Auto">
         INSERT
         <include refid="table"/>
-        (<include refid="columns"/>)
+        (<include refid="database_columns"/>)
         VALUES (#{id},#{name},#{type},#{quality},#{weightCapacity},#{passengerNumber},#{dayPrice})
     </insert>
 
     <update id="createTable">
-       create table if not exists <include refid="table"/>(
+        create table if not exists<include refid="table"/>(
         id smallint unsigned not null auto_increment primary key,
         name varchar(30) not NULL UNIQUE,
         type varchar(10) not NULL,
         quality smallint unsigned not NULL,
         weight_capacity smallint unsigned not NULL,
-        passenger_number tinyint unsigned  not NULL,
+        passenger_number tinyint unsigned not NULL,
         day_price smallint unsigned not NULL)
     </update>
 
     <delete id="deleteAuto" parameterType="Auto">
-        DELETE FROM <include refid="table"/>
+        DELETE FROM
+        <include refid="table"/>
         WHERE id = #{id}
     </delete>
 
@@ -48,20 +53,26 @@
         WHERE id = #{id}
     </update>
 
-    <select id="selectOneById" resultType="Auto" parameterType="int">
-        select <include refid="columns"/> from
+    <select id="getOneById" resultType="Auto" parameterType="int">
+        select
+        <include refid="select_all_columns"/>
+        from
         <include refid="table"/>
         where id = #{id}
     </select>
 
-    <select id="selectOneByName" resultType="Auto" parameterType="String">
-        select <include refid="columns"/> from
+    <select id="getOneByName" resultType="Auto" parameterType="String">
+        select
+        <include refid="select_all_columns"/>
+        from
         <include refid="table"/>
         where name = #{name}
     </select>
 
-    <select id="selectList" resultType="Auto">
-        SELECT <include refid="columns"/> FROM
+    <select id="getList" resultType="Auto">
+        SELECT
+        <include refid="select_all_columns"/>
+        FROM
         <include refid="table"/>
     </select>
 
